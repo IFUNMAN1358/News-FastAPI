@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    depends_on:
+      - db
+      - redis
+      - elasticsearch
+      - kibana
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    networks:
+      - ntw
+
+  db:
+    container_name: db
+    image: postgres:15
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    networks:
+      - ntw
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    env_file:
+      - .env
+    networks:
+      - ntw
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    env_file:
+      - .env
+    ports:
+      - "9200:9200"
+    networks:
+      - ntw
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+    env_file:
+      - .env
+    links:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    networks:
+      - ntw
+    depends_on:
+      - elasticsearch
+
+networks:
+  ntw:
+    driver: bridge

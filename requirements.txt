@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+gunicorn
+alembic
+SQLAlchemy
+python-dotenv
+asyncpg
+pydantic[email]
+passlib[bcrypt]
+python-jose[cryptography]
+redis[hiredis]
+elasticsearch[async]
+python-multipart
+fastapi-mail
+loguru
